@@ -10,7 +10,7 @@ Code and data for the preprint:
 
 SLC2A8 (GLUT8) expression marks a metabolic subtype within RAS-mutant cancers — characterized by endosomal trafficking, lipogenesis, and oxidative glycolysis programs — that is selectively sensitive to AKT inhibitors (capivasertib, ipatasertib, afuresertib). The signal is:
 
-- **Lineage-independent** (survives correction across 15+ tissue types)
+- **Lineage-independent** (survives correction across 15 tissue types)
 - **RAS-context-dependent** (interaction p=0.004--0.040; null without RAS mutation)
 - **Validated across four data layers** (PRISM drug screening, lineage-corrected pharmacology, co-expression, CRISPR dependency)
 - **Self-challenged** (convergence testing shows AKT sensitivity and lipogenesis dependency are independently distributed)

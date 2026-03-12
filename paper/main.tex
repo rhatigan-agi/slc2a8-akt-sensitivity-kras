@@ -1,6 +1,7 @@
 % Build: pdflatex main && bibtex main && pdflatex main && pdflatex main
 \documentclass[12pt]{article}
 
+\usepackage[T1]{fontenc}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
@@ -27,7 +28,7 @@
 \title{SLC2A8 expression identifies a metabolic tumor subtype selectively
 sensitive to AKT inhibitors across KRAS-mutant cancers}
 
-\author[1]{Jeffrey Rhatigan}
+\author[1]{Jeffrey Rhatigan\thanks{Correspondence: \href{mailto:jeff@rhatigan.ai}{jeff@rhatigan.ai}. ORCID: \href{https://orcid.org/0009-0008-7595-2184}{0009-0008-7595-2184}}}
 \affil[1]{Independent Researcher}
 
 \date{}
@@ -66,8 +67,8 @@ are independently distributed at the cell-line level, indicating that
 SLC2A8 marks a metabolic state rather than a single targetable pathway.
 
 \textbf{Conclusions:}
-SLC2A8 expression identifies a pan-cancer metabolic subtype selectively
-sensitive to AKT inhibitors, independent of tissue lineage. This biomarker
+SLC2A8 expression identifies a metabolic subtype within RAS-mutant cancers
+that is selectively sensitive to AKT inhibitors, independent of tissue lineage. This biomarker
 hypothesis has potential translational relevance given that capivasertib
 is already FDA-approved.
 
@@ -87,7 +88,7 @@ Capivasertib received FDA approval in 2023 for PIK3CA/AKT1/PTEN-altered
 hormone receptor--positive, HER2-negative advanced breast cancer, based
 on the CAPItello-291 trial \citep{Turner2023}. Ipatasertib and afuresertib
 are in late-stage clinical development across multiple tumor types
-\citep{Jones2020}. Despite this clinical progress, current biomarkers for
+\citep{Coleman2021}. Despite this clinical progress, current biomarkers for
 AKT inhibitor response remain limited to a small set of genomic
 alterations---PIK3CA activating mutations, AKT1 E17K mutations, and PTEN
 loss---that enrich for response but fail to identify many patients who
@@ -103,7 +104,7 @@ the canonical plasma membrane transporters GLUT1 (SLC2A1) and GLUT4
 membranes. GLUT8 functions as a mammalian trehalose transporter and is
 required for trehalose-induced autophagy in cell culture models
 \citep{Mayer2016}. In metabolic physiology, GLUT8 has been linked to
-fructose-induced de novo lipogenesis \citep{DeBosch2012}. However, the
+fructose-induced de novo lipogenesis \citep{DeBosch2014}. However, the
 role of SLC2A8 in cancer metabolism remains poorly characterized.
 Notably, GLUT8 is highly expressed in RAS-mutant gastrointestinal cancers:
 69\% of PDAC cell lines express SLC2A8 above the pan-cancer 25th
@@ -142,9 +143,10 @@ varies substantially by lineage (Figure~1A). PDAC cell lines are among
 the highest expressors, with 69\% exceeding the pan-cancer 25th
 percentile. Unsupervised clustering of the expression data yields two
 coherent subgroups (silhouette score = 0.355), with the SLC2A8-high
-cluster enriched for RAS-pathway mutations (KRAS, NRAS, HRAS, BRAF, and
-PIK3CA hotspot mutations). Stratifying cell lines by SLC2A8 expression
-above the pan-cancer median and RAS-pathway mutation status produces
+cluster enriched for RAS-pathway activating mutations (KRAS, NRAS, HRAS,
+BRAF, or PIK3CA hotspot mutations). Stratifying cell lines by SLC2A8
+expression above the pan-cancer median and RAS-pathway mutation status
+produces
 223 target and 880 background lines. Within the PDAC lineage alone,
 this stratification is statistically significant ($p$=0.022, Fisher
 exact test), confirming that SLC2A8-based subtyping captures meaningful
@@ -159,8 +161,8 @@ subtype without bias toward any particular mechanism, we performed
 differential sensitivity analysis across all 6,790 compounds in the
 PRISM (24Q2) repurposing dataset (Figure~2). Only two compounds survive
 FDR correction at $q$<0.10: alpelisib (a PI3K$\alpha$ inhibitor,
-$p$=3.77$\times$10$^{-6}$) and afuresertib (an AKT inhibitor,
-$p$=5.20$\times$10$^{-6}$). At the mechanism-of-action (MOA) level,
+$q$=0.026) and afuresertib (an AKT inhibitor,
+$q$=0.035). At the mechanism-of-action (MOA) level,
 Fisher exact testing for enrichment of significant hits ($p$<0.05)
 within each drug class identifies AKT inhibitors as the most enriched
 class (10 of 25 AKT inhibitors significant; OR=19.93,
@@ -382,7 +384,7 @@ glycolysis (PFKL, PKM) programs. This is not Warburg metabolism: HK2 and
 LDHA show no correlation with SLC2A8, and PDK1 is lower in the target
 group. The metabolic state resembles a profile of intracellular nutrient
 processing and membrane biosynthesis rather than aerobic glycolysis.
-Convergence testing (Section~2.7) showed that the lipogenesis
+Convergence testing (Section~2.8) showed that the lipogenesis
 dependencies and AKT drug sensitivity are independently distributed at
 the cell-line level, indicating that these are parallel features of the
 subtype rather than nodes in a single druggable pathway. The metabolic
@@ -487,8 +489,8 @@ values indicate greater growth-inhibiting effect upon gene knockout
 
 Cell lines were stratified into target and background groups based on
 two criteria: (1)~SLC2A8 expression above the pan-cancer median, and
-(2)~the presence of a hotspot mutation in any RAS-pathway gene (KRAS,
-NRAS, HRAS, BRAF, or PIK3CA). Cell lines meeting both criteria were
+(2)~the presence of a hotspot mutation in any RAS-pathway activating
+gene (KRAS, NRAS, HRAS, BRAF, or PIK3CA). Cell lines meeting both criteria were
 assigned to the target group (n=223); all remaining lines comprised
 the background group (n=880). The total analysis set included 1,103
 cell lines with matched expression, CRISPR, and metadata annotations.
@@ -536,9 +538,9 @@ SREBF1, HMGCR, SCD5, ACLY), glycolysis (PFKL, GPI, PKM, ALDOA, PFKP),
 glucose transport (SLC2A6, SLC2A1, SLC2A11, SLC2A12, SLC2A4), nutrient
 sensing (FLCN, FNIP1, RRAGA, SLC7A5, SLC3A2, SLC1A5), AKT/PI3K
 signaling (AKT1, MTOR, PDPK1, RPS6KB1, PIK3CB), and Warburg metabolism
-as a negative control (LDHA, HK2, GAPDH, HK1, PDK1). No multiple
-testing correction was applied to individual gene tests, as the gene
-set was pre-specified and hypothesis-driven rather than genome-wide. Group comparisons (target versus
+as a negative control (LDHA, HK2, GAPDH, HK1, PDK1). Because this analysis used pre-specified candidate genes rather than
+genome-wide testing, multiple testing correction was not applied to
+individual gene tests. Group comparisons (target versus
 background) were assessed using Cohen's $d$ effect size \citep{Cohen1988}
 and Welch's $t$-test $p$-values.
 
