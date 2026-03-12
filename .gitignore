@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+.eggs/
+
+# Data (download separately — see DATA_SOURCES.md)
+data/raw/
+*.csv
+*.tsv
+*.h5ad
+*.h5
+
+# Test caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# IDE
+.vscode/
+.idea/
