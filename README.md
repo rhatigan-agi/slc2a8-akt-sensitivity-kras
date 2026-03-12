@@ -8,12 +8,16 @@ Code and data for the preprint:
 
 ## Key Finding
 
-SLC2A8 (GLUT8) expression marks a pan-cancer metabolic subtype — characterized by endosomal trafficking, lipogenesis, and oxidative glycolysis programs — that is selectively sensitive to AKT inhibitors (capivasertib, ipatasertib, afuresertib). The signal is:
+SLC2A8 (GLUT8) expression marks a metabolic subtype within RAS-mutant cancers — characterized by endosomal trafficking, lipogenesis, and oxidative glycolysis programs — that is selectively sensitive to AKT inhibitors (capivasertib, ipatasertib, afuresertib). The signal is:
 
 - **Lineage-independent** (survives correction across 15+ tissue types)
 - **RAS-context-dependent** (interaction p=0.004--0.040; null without RAS mutation)
 - **Validated across four data layers** (PRISM drug screening, lineage-corrected pharmacology, co-expression, CRISPR dependency)
 - **Self-challenged** (convergence testing shows AKT sensitivity and lipogenesis dependency are independently distributed)
+
+## Discovery Narrative
+
+This project began with a different hypothesis: that SLC2A8-high, RAS-mutant cells would exhibit autophagy-related vulnerability based on GLUT8's role in trehalose metabolism. Systematic testing falsified that hypothesis and revealed a stronger signal — selective sensitivity to AKT inhibitors. The analysis scripts preserve this full discovery arc, including negative results (H13g convergence testing), because the falsification process is part of the scientific contribution.
 
 ## Repository Structure
 
@@ -110,10 +114,6 @@ No data is included in this repository. All analyses use publicly available data
 
 See [DATA_SOURCES.md](DATA_SOURCES.md) for download instructions.
 
-## Discovery Narrative
-
-This project began with a different hypothesis: that SLC2A8-high, RAS-mutant cells would exhibit autophagy-related vulnerability based on GLUT8's role in trehalose metabolism. Systematic testing falsified that hypothesis and revealed a stronger signal — selective sensitivity to AKT inhibitors. The analysis scripts preserve this full discovery arc, including negative results (H13g convergence testing), because the falsification process is part of the scientific contribution.
-
 ## Methods Summary
 
 | Analysis | Script | Key Result |
@@ -147,6 +147,13 @@ If you use this code or find the biomarker hypothesis useful, please cite:
   author={Rhatigan, Jeffrey},
   journal={bioRxiv},
   year={2026},
-  note={Preprint}
+  note={bioRxiv preprint},
+  doi={pending}
 }
 ```
+
+## About Rhatigan Labs
+
+Rhatigan Labs develops AI-assisted research infrastructure combining large language models with structured data analysis pipelines.
+
+This project represents an early demonstration of AI-assisted hypothesis discovery validated through reproducible computational analysis.
