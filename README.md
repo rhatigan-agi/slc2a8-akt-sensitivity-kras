@@ -1,10 +1,54 @@
-# SLC2A8 Identifies a Metabolic Tumor Subtype Sensitive to AKT Inhibitors
+# SLC2A8 Identifies a Metabolic Tumor Subtype Sensitive to AKT Inhibitors across RAS-Pathway-Mutant Cancers
 
 Code and data for the preprint:
 
-> **SLC2A8 expression identifies a metabolic tumor subtype selectively sensitive to AKT inhibitors across KRAS-mutant cancers**
+> **SLC2A8 expression identifies a metabolic tumor subtype selectively sensitive to AKT inhibitors across RAS-pathway-mutant cancers**
 >
 > Jeffrey Rhatigan (2026). *bioRxiv* [preprint]. DOI: [pending]
+
+*Dedicated to Jennifer J. Rhatigan (1964--2025).
+She met her illness with unwavering optimism and the conviction that everything---even her death---was meant to be.
+Her passing redirected my focus to this research.
+If these findings help even one family going through this battle, she was right: it was meant to be.*
+
+---
+
+## TL;DR — Why This Matters
+
+**The problem:** AKT inhibitors (capivasertib, ipatasertib, afuresertib) work, but we don't know which patients to give them to beyond PIK3CA/PTEN mutations — and those mutations are rare in KRAS-mutant cancers like PDAC.
+
+**What we found:** SLC2A8 (GLUT8) expression, in RAS-mutant contexts, stratifies tumors with differential sensitivity to AKT inhibitors across cancer types. Notably, in stratifier-free analysis (no mutation grouping), AKT inhibitors rank 1--5 out of 6,790 compounds by correlation with SLC2A8 expression alone. In PDAC:
+- **~69% of cell lines** are SLC2A8-high (the target population)
+- **~95% of PDAC** is KRAS-mutant (the RAS-pathway context where SLC2A8 stratifies)
+- **<10% of PDAC** has PIK3CA/PTEN mutations (what current tests catch)
+
+**The clinical gap:** As of March 2026, SLC2A8 is **not on any major clinical genomic panel** — not FoundationOne CDx (324 genes), not Tempus xT, not Caris MI Profile.
+
+**Clinical context.** AKT inhibitors such as capivasertib are clinically available (FDA-approved 2023 for breast cancer), but robust biomarkers for patient selection in RAS-pathway-mutant cancers remain limited.
+
+### Validation Depth (Not "Just Another AI Hypothesis")
+
+| Layer | What We Tested | Result |
+|-------|---------------|--------|
+| Unbiased drug screen | 6,790 PRISM compounds | AKT inhibitors: OR=19.93, p=3.3e-9 |
+| Lineage correction | Regressed out tissue type | AKT signal survives (r=-0.131 to -0.147, all p<0.005); PI3K signal collapses |
+| PIK3CA/PTEN confound | Added mutation covariates (Davies 2012 challenge) | ~15% attenuation, all 3 drugs remain p<0.01 |
+| Co-expression | Transcriptional fingerprint | Endosomal trafficking + lipogenesis programs |
+| CRISPR dependency | Genetic knockouts | SCD d=-0.316, AKT1 d=-0.277 |
+| Self-falsification | Tested causal chain hypothesis | Rejected overclaim (H13g); lipogenesis deps are independent |
+| RAS interaction | Interaction regression | SLC2A8 alone null; SLC2A8 x KRAS significant (p=0.004) |
+
+### Population Impact
+
+| Cancer Type | KRAS Mutation Rate | SLC2A8-High Prevalence | Current PIK3CA Testing Captures |
+|---|---|---|---|
+| PDAC | ~95% | ~69% of lines | ~5-7% of patients |
+| Colorectal | ~45% | Present in subset | ~15-20% of patients |
+| Non-small cell lung | ~30% | Variable by subtype | ~5-10% of patients |
+
+*SLC2A8 identifies a large subset of tumors with increased AKT inhibitor sensitivity that would not be captured by PIK3CA/PTEN mutation testing.*
+
+---
 
 ## Key Finding
 
@@ -12,8 +56,10 @@ SLC2A8 (GLUT8) expression marks a metabolic subtype within RAS-mutant cancers �
 
 - **Lineage-independent** (survives correction across 15 tissue types)
 - **RAS-context-dependent** (interaction p=0.004--0.040; null without RAS mutation)
-- **Validated across four data layers** (PRISM drug screening, lineage-corrected pharmacology, co-expression, CRISPR dependency)
+- **PIK3CA/PTEN-independent** (~15% attenuation after mutation adjustment; all drugs remain p<0.01)
+- **Validated across five data layers** (PRISM drug screening, lineage-corrected pharmacology, co-expression, CRISPR dependency, PIK3CA/PTEN confound control)
 - **Self-challenged** (convergence testing shows AKT sensitivity and lipogenesis dependency are independently distributed)
+- **Not currently captured by clinical panels** (SLC2A8 absent from FoundationOne CDx, Tempus xT, and other panels as of March 2026)
 
 ## Discovery Narrative
 
@@ -27,7 +73,7 @@ paper/
   main.pdf                  # Compiled preprint
   references.bib            # Bibliography
   generate_figures.py        # Regenerate all figures from source data
-  figures/                   # Publication figures (6 main + 3 supplementary)
+  figures/                   # Publication figures (6 main + 7 supplementary)
 
 scripts/
   h13c_deep_dive.py          # Unbiased PRISM screen + MOA enrichment
@@ -36,6 +82,9 @@ scripts/
   h13f_metabolic_clue.py     # Metabolic co-expression + CRISPR dependencies
   h13g_convergence.py        # Convergence testing (self-falsification)
   h13h_reviewer_analyses.py  # RAS interaction model + ROC + TCGA descriptive
+  h13i_pik3ca_confound.py    # PIK3CA/PTEN mutation confound check (Davies 2012)
+  h13j_kras_only_sensitivity.py  # KRAS-only stratifier sensitivity analysis
+  h13k_slc2a8_independence.py    # Stratifier-free validation + subgroup analysis
 
 src/pdac/
   h13_trehalose_vulnerability/  # Core analysis modules
@@ -92,6 +141,7 @@ python scripts/h13e_sanity_checks.py    # Lineage correction
 python scripts/h13f_metabolic_clue.py   # Metabolic fingerprint
 python scripts/h13g_convergence.py      # Self-falsification
 python scripts/h13h_reviewer_analyses.py # RAS interaction + TCGA
+python scripts/h13i_pik3ca_confound.py  # PIK3CA/PTEN confound check
 
 # Regenerate paper figures
 python paper/generate_figures.py
@@ -124,6 +174,9 @@ See [DATA_SOURCES.md](DATA_SOURCES.md) for download instructions.
 | CRISPR dependencies | `h13f` | SCD (d=-0.316), PIK3C3 (d=-0.302), AKT1 (d=-0.277) |
 | Convergence testing | `h13g` | Drug sensitivity and CRISPR deps independently distributed |
 | RAS interaction | `h13h` | Signal exists only in RAS-mutant context (interaction p=0.004) |
+| PIK3CA/PTEN confound | `h13i` | Signal survives mutation adjustment (~15% attenuation; all p<0.01) |
+| Stratifier sensitivity | `h13j` | Excluding PIK3CA collapses group MOA enrichment; MEK enrichment surges |
+| Stratifier-free validation | `h13k` | AKT inhibitors rank 1–5 among 6,790 compounds by SLC2A8 correlation alone |
 
 ## Acknowledgments
 
@@ -143,7 +196,7 @@ If you use this code or find the biomarker hypothesis useful, please cite:
 ```bibtex
 @article{rhatigan2026slc2a8,
   title={SLC2A8 expression identifies a metabolic tumor subtype selectively
-         sensitive to AKT inhibitors across KRAS-mutant cancers},
+         sensitive to AKT inhibitors across RAS-pathway-mutant cancers},
   author={Rhatigan, Jeffrey},
   journal={bioRxiv},
   year={2026},

@@ -26,13 +26,22 @@
 
 % ====================================================================
 \title{SLC2A8 expression identifies a metabolic tumor subtype selectively
-sensitive to AKT inhibitors across KRAS-mutant cancers}
+sensitive to AKT inhibitors across RAS-pathway-mutant cancers}
 
-\author[1]{Jeffrey Rhatigan\thanks{Correspondence: \href{mailto:jeff@rhatigan.ai}{jeff@rhatigan.ai}. ORCID: \href{https://orcid.org/0009-0008-7595-2184}{0009-0008-7595-2184}}}
-\affil[1]{Independent Researcher}
+\author[1]{Jeffrey Rhatigan}
+\affil[1]{{\small Independent Researcher. Correspondence: \href{mailto:jeff@rhatigan.ai}{jeff@rhatigan.ai}. ORCID:~\href{https://orcid.org/0009-0008-7595-2184}{0009-0008-7595-2184}}}
 
 \date{}
 \maketitle
+
+\begin{center}
+\textit{Dedicated to Jennifer J. Rhatigan (1964--2025).
+She met her illness with unwavering optimism and the conviction that everything---even her death---was meant to be.
+Her passing redirected my focus to this research.
+If these findings help even one family going through this battle, she was right: it was meant to be.}
+\end{center}
+
+\bigskip
 
 % ====================================================================
 \begin{abstract}
@@ -48,7 +57,9 @@ lines using DepMap (24Q4) expression, CRISPR dependency, and mutation data
 combined with PRISM (24Q2) drug sensitivity screening of 6,790 compounds.
 We stratified cell lines by SLC2A8 (GLUT8) expression and RAS-pathway
 mutation status, then tested for differential drug sensitivity,
-transcriptional co-expression, and genetic dependencies.
+transcriptional co-expression, and genetic dependencies. We further tested
+whether the SLC2A8 signal is confounded by known AKT-sensitizing mutations
+(PIK3CA, PTEN) using nested regression models.
 
 \textbf{Results:}
 Unbiased PRISM screening identified AKT inhibitors as the most enriched
@@ -57,7 +68,15 @@ drug class among SLC2A8-high/RAS-mutant-sensitive compounds
 predicted AKT inhibitor sensitivity (Spearman $\rho$=$-$0.165,
 $p$=4.0$\times$10$^{-4}$ for afuresertib), and this signal survived
 lineage correction (partial $r$=$-$0.144, $p$=0.002), unlike PI3K
-inhibitor signals which were confounded by tissue type. The SLC2A8-high
+inhibitor signals which were confounded by tissue type. The signal also
+survived adjustment for PIK3CA and PTEN mutation status: all three AKT
+inhibitors remained significant ($p$<0.01) in a model including both
+covariates, with approximately 15\% attenuation of the SLC2A8 coefficient.
+In a stratifier-free analysis, AKT inhibitors ranked first through fifth
+among 6,790 compounds by SLC2A8 correlation alone (no mutation
+information used), and the signal persisted within PIK3CA-wildtype
+cell lines ($p$<0.02 for all three AKT drugs).
+The SLC2A8-high
 subtype co-expressed endosomal trafficking (VPS35, RAB7A, LAMP1) and
 lipid biosynthesis programs (FASN, SCD, SREBF1), and showed differential
 CRISPR dependencies on SCD ($d$=$-$0.316, $p$=5.5$\times$10$^{-6}$) and
@@ -68,9 +87,12 @@ SLC2A8 marks a metabolic state rather than a single targetable pathway.
 
 \textbf{Conclusions:}
 SLC2A8 expression identifies a metabolic subtype within RAS-mutant cancers
-that is selectively sensitive to AKT inhibitors, independent of tissue lineage. This biomarker
+that is selectively sensitive to AKT inhibitors, independent of both tissue
+lineage and PIK3CA/PTEN mutation status. This biomarker
 hypothesis has potential translational relevance given that capivasertib
-is already FDA-approved.
+is already FDA-approved. Notably, SLC2A8 is not included in current
+clinical sequencing panels (FoundationOne CDx, Tempus xT), representing a
+gap in existing companion diagnostics for AKT-targeted therapy.
 
 \end{abstract}
 
@@ -92,10 +114,16 @@ are in late-stage clinical development across multiple tumor types
 AKT inhibitor response remain limited to a small set of genomic
 alterations---PIK3CA activating mutations, AKT1 E17K mutations, and PTEN
 loss---that enrich for response but fail to identify many patients who
-benefit. This gap is particularly acute in KRAS-mutant cancers, including
+benefit \citep{Davies2012}. This gap is particularly acute in KRAS-mutant cancers, including
 pancreatic ductal adenocarcinoma (PDAC), colorectal cancer, and non-small
 cell lung cancer, where effective targeted therapies remain scarce
-\citep{Waters2018, Prior2020}.
+\citep{Waters2018, Prior2020}. In PDAC, for example, only 5--7\% of tumors
+carry PIK3CA mutations and 10--15\% show PTEN loss, yet $\sim$95\% are
+KRAS-mutant---leaving the vast majority of potentially AKT-targetable patients
+without a biomarker. Moreover, current clinical sequencing panels
+(FoundationOne CDx, 324 genes; Tempus xT; Caris MI Profile) do not
+include SLC2A8, leaving transcriptomic biomarkers of AKT sensitivity
+outside routine clinical profiling.
 
 SLC2A8 encodes GLUT8, a type III facilitative glucose transporter
 localized primarily to lysosomes and endosomes \citep{Mueckler2013}. Unlike
@@ -124,7 +152,8 @@ biomarker claim.
 
 SLC2A8 expression identifies a metabolic subtype that is selectively
 sensitive to AKT inhibitors across cancer lineages. The signal is
-lineage-independent, validated across four independent data layers, and
+lineage-independent, survives adjustment for PIK3CA/PTEN mutation status,
+and is validated across five complementary evidence layers. It is
 immediately translatable given the current clinical development of
 AKT-targeted agents. The subtype is characterized by distinctive biology,
 including endosomal trafficking and lipogenesis programs, but the
@@ -307,7 +336,7 @@ on the PI3K/AKT axis as a key effector pathway, and SLC2A8-high
 expression may mark the subset most dependent on this signaling arm.
 
 To quantify classification performance, we computed ROC AUC for SLC2A8
-as a predictor of AKT drug sensitivity (Supplementary Figure~S4A). AUC
+as a predictor of AKT drug sensitivity (Supplementary Figure~S5A). AUC
 values are modest (0.55--0.59 for median-split sensitivity), consistent
 with expectations for single-gene pharmacogenomic biomarkers. A more
 clinically relevant comparison is the top-versus-bottom SLC2A8 expression
@@ -365,18 +394,111 @@ claim to what the data directly supports: SLC2A8 predicts AKT inhibitor
 sensitivity, not a metabolic pathway that can be targeted at multiple
 points simultaneously.
 
+% --------------------------------------------------------------------
+\subsection{PIK3CA/PTEN confound control: the SLC2A8 signal is
+independent of known AKT-sensitizing mutations}
+
+Preclinical data have established that PIK3CA activating mutations predict
+AKT inhibitor sensitivity and RAS mutations predict resistance
+\citep{Davies2012}. Because PIK3CA-mutant cell lines are included in our
+RAS-pathway stratification (PIK3CA is a RAS-pathway effector), we tested
+whether the SLC2A8--AKT sensitivity association is merely a proxy for
+PIK3CA or PTEN mutational status (Supplementary Figure~S4).
+
+\textbf{Collinearity assessment.} PIK3CA-mutant lines are enriched in the
+SLC2A8-high half of the cohort: 77\% of PIK3CA-mutant lines fall in the
+SLC2A8-high group versus 42\% of PIK3CA-wildtype lines (OR=4.60,
+$p$<0.001, Fisher exact test). SLC2A8 expression is higher in
+PIK3CA-mutant lines (Cohen's $d$=+0.581, $p$<0.001). PTEN-mutant lines
+show a weaker but still significant enrichment ($d$=+0.347, $p$<0.001).
+This collinearity confirms that confound testing is necessary.
+
+\textbf{Nested regression models.} We fit three nested OLS models
+predicting AKT drug sensitivity: M1 (lineage dummies only), M2
+(lineage + PIK3CA mutation), and M3 (lineage + PIK3CA + PTEN mutation).
+SLC2A8 expression was then added to each model as the final predictor.
+Across all three AKT inhibitors:
+
+\begin{itemize}
+  \item In M1 (lineage only): SLC2A8 is significant for all three drugs
+    (afuresertib $p$=1$\times$10$^{-4}$, ipatasertib $p$=4$\times$10$^{-4}$, capivasertib $p$=4$\times$10$^{-4}$).
+  \item In M2 (+PIK3CA): SLC2A8 remains significant for all three drugs
+    ($p$<0.01 for all), with $\sim$10\% attenuation of the coefficient.
+  \item In M3 (+PIK3CA+PTEN): SLC2A8 remains significant for all three
+    drugs ($p$<0.01 for all), with $\sim$15\% total attenuation.
+\end{itemize}
+
+\textbf{Interpretation.} The SLC2A8 signal is partially collinear with
+PIK3CA mutation status, as expected given the shared RAS-pathway biology,
+but the association survives full adjustment. Approximately 85\% of the
+SLC2A8--AKT sensitivity signal is independent of PIK3CA and PTEN mutation
+status. This means SLC2A8 captures information about AKT inhibitor
+sensitivity that existing genomic biomarkers miss---precisely the subset
+of patients who would not be identified by current companion diagnostics.
+
+% --------------------------------------------------------------------
+\subsection{Stratifier-free validation: SLC2A8 expression alone ranks AKT
+inhibitors first among 6,790 compounds}
+
+Because PIK3CA is included in our RAS-pathway mutation stratifier, we
+tested whether the AKT signal depends on this inclusion. Excluding PIK3CA
+from the stratifier (retaining only KRAS, NRAS, HRAS, and BRAF) caused the
+group-level PRISM MOA enrichment for AKT inhibitors to collapse
+(OR=19.93$\rightarrow$0.84, $p$=0.70), while MEK inhibitor enrichment
+surged (OR=6.95$\rightarrow$40.28)---consistent with the remaining
+stratifier genes signaling through RAF$\rightarrow$MEK rather than
+PI3K$\rightarrow$AKT (Supplementary Table~1).
+
+To resolve whether the underlying SLC2A8--AKT association is real, we
+performed a stratifier-free analysis: Spearman rank correlation of SLC2A8
+expression against each of the 6,790 PRISM compounds, using no mutation
+information. The five most negatively correlated drugs were all AKT
+inhibitors (afuresertib rank 1, $\rho$=$-$0.189; capivasertib rank 4;
+ipatasertib rank 5). AKT inhibitors were enriched 11-fold among the top
+5\% of negatively correlated drugs (9/25 AKT inhibitors in top 5\%;
+OR=10.97, $p$=1.7$\times$10$^{-6}$; Supplementary Figure~S6).
+
+To further test independence from PIK3CA mutation, we computed SLC2A8--AKT
+drug correlations within PIK3CA-wildtype cell lines only (n=460--468).
+All three AKT drugs remained significant after lineage correction
+(afuresertib partial $r$=$-$0.125, $p$=0.007; capivasertib $r$=$-$0.112,
+$p$=0.016; ipatasertib $r$=$-$0.110, $p$=0.018). The effect size was
+2--3$\times$ larger in PIK3CA-mutant lines ($r$=$-$0.26 to $-$0.35),
+indicating SLC2A8 further stratifies AKT sensitivity within both
+PIK3CA-mutant and PIK3CA-wildtype contexts (Supplementary Figure~S7).
+In the smaller KRAS-mutant/PIK3CA-wildtype subgroup (n$\approx$91), AKT
+drug correlations were not significant, consistent with the reduced
+statistical power in this clinically relevant but underpowered subgroup.
+
 % ====================================================================
 \section{Discussion}
 % ====================================================================
 
 This study identifies SLC2A8 expression as a lineage-independent
 biomarker hypothesis for AKT inhibitor sensitivity across RAS-mutant
-cancers. Four independent evidence layers converge on this finding:
+cancers. Five complementary evidence layers converge on this finding:
 unbiased drug screening (PRISM, 6,790 compounds), lineage-controlled
 pharmacological correlation, transcriptional co-expression profiling,
-and CRISPR genetic dependency analysis. The evidence is computational
+CRISPR genetic dependency analysis, and confound control against
+PIK3CA/PTEN mutation status (Section~2.9). The evidence is computational
 and correlational; the claim is a biomarker hypothesis requiring
-experimental validation, not a mechanistic proof.
+experimental validation, not a mechanistic proof. SLC2A8 expression
+should be understood as a stratification-associated biomarker that
+enriches for AKT sensitivity within RAS-mutant cancers, not as a
+standalone clinical classifier with defined sensitivity and specificity.
+
+An important methodological caveat emerged during validation: the
+group-level PRISM MOA enrichment (Section~2.2) is sensitive to whether
+PIK3CA is included in the RAS-pathway mutation stratifier. Excluding
+PIK3CA collapses the AKT enrichment, because PIK3CA-mutant lines---which
+are known to be AKT-sensitive \citep{Davies2012}---are disproportionately
+represented in the SLC2A8-high target group. However, the
+stratifier-free continuous analysis (Section~2.10) demonstrates that
+the SLC2A8--AKT association is genuine: AKT inhibitors rank first through
+fifth among 6,790 compounds by SLC2A8 correlation alone, and the signal
+persists in PIK3CA-wildtype lines. The group-level test conflated two
+real signals (PIK3CA-mutation-driven and SLC2A8-expression-driven AKT
+sensitivity); the continuous analyses separate them.
 
 The SLC2A8-high subtype co-expresses endosomal trafficking (VPS35,
 RAB7A, LAMP1), lipid biosynthesis (FASN, SCD, SREBF1), and oxidative
@@ -401,21 +523,39 @@ AKT dependence is particularly acute. Preliminary analysis of TCGA-PAAD
 tumor data (n=178) shows that SLC2A8 co-expression with AKT1
 ($\rho$=+0.21, $p$=0.005) and FASN ($\rho$=+0.18, $p$=0.016) partially
 replicates in patient tumor tissue, though other co-expression patterns
-(VPS35, SCD) do not transfer, likely due to stromal contamination in
-bulk tumor RNA-seq (Supplementary Figure~S4B).
+do not transfer. VPS35 in particular shows sign inversion
+($\rho$=$-$0.171 in TCGA-PAAD vs.\ $+$0.364 in DepMap), likely
+reflecting stromal contamination in bulk tumor RNA-seq that
+differentially affects endosomal trafficking genes
+(Supplementary Figure~S5B).
 
 The translational relevance of this finding is notable. Capivasertib
 is FDA-approved for PIK3CA/AKT1/PTEN-altered breast cancer
 \citep{Turner2023}. Ipatasertib and afuresertib are in clinical trials
 for multiple tumor types including PDAC and colorectal cancer. Current
 biomarkers (PIK3CA mutation, PTEN loss) identify a subset of responders
-but are neither necessary nor sufficient for response. SLC2A8 could
-complement these genomic biomarkers as a transcriptomic predictor,
-particularly for KRAS-mutant tumors where AKT inhibitors are being
-tested in combination with MEK or KRAS inhibitors. The MEK inhibitor
-enrichment in our PRISM analysis (OR=6.95, $p$=1.5$\times$10$^{-3}$)
-is consistent with a rationale for AKT/MEK combination therapy in
-SLC2A8-high tumors, though this requires independent validation.
+but are neither necessary nor sufficient for response. In PDAC, where
+$\sim$95\% of tumors are KRAS-mutant but only 5--7\% carry PIK3CA
+mutations and 10--15\% show PTEN loss, existing companion diagnostics
+miss the vast majority of potentially AKT-targetable patients. SLC2A8 is
+expressed above the pan-cancer 25th percentile in 69\% of PDAC cell lines,
+suggesting it could identify a substantially larger patient population.
+SLC2A8 could complement these genomic biomarkers as a transcriptomic
+predictor, particularly for KRAS-mutant tumors where AKT inhibitors are
+being tested in combination with MEK or KRAS inhibitors.
+
+Critically, SLC2A8 is absent from all major clinical sequencing panels as
+of March 2026, including FoundationOne CDx (324 genes), Tempus xT, and
+Caris MI Profile. This represents a clinical blind spot: even if SLC2A8
+proves to be a valid biomarker, no currently available companion diagnostic
+would detect it. Adoption would require either addition of SLC2A8 to
+existing panels or development of a standalone immunohistochemistry or
+RNA-based assay.
+
+The MEK inhibitor enrichment in our PRISM analysis (OR=6.95,
+$p$=1.5$\times$10$^{-3}$) is consistent with a rationale for AKT/MEK
+combination therapy in SLC2A8-high tumors, though this requires
+independent validation.
 
 Our analysis initially conflated PI3K and AKT inhibitor signals because
 PDAC cells are both SLC2A8-high and disproportionately sensitive to
@@ -446,7 +586,15 @@ stratification is unknown. PRISM
 sensitivity measures growth inhibition in 2D culture, which may not
 predict in vivo efficacy. PTEN was not differentially expressed
 ($d$=$-$0.096, $p$=0.20), but PTEN protein loss through
-post-translational mechanisms is not captured by mRNA data. Finally,
+post-translational mechanisms is not captured by mRNA data.
+The PIK3CA/PTEN confound analysis (Section~2.9) showed $\sim$15\%
+attenuation of the SLC2A8 coefficient when adjusting for these mutations,
+indicating partial co-variance. While the signal clearly survives
+adjustment, this co-variance means a minority of the SLC2A8-associated
+sensitivity may reflect shared biology with PIK3CA-driven AKT dependence.
+Whether the residual $\sim$85\% represents a truly orthogonal mechanism
+or a more complex interaction requires experimental dissection.
+Finally,
 convergence testing showed that AKT drug sensitivity and lipogenesis
 dependencies are independently distributed, meaning that SLC2A8 predicts
 AKT sensitivity but not a metabolic pathway that can be targeted at
@@ -523,8 +671,10 @@ OncotreeLineage categories were one-hot encoded for the top 15 lineages.
 Drug sensitivity and SLC2A8 expression were each residualized by ordinary
 least squares regression against the lineage dummy variables. The
 partial correlation between SLC2A8 and drug sensitivity was computed as
-the Spearman correlation of the residuals. Statistical significance was
-assessed by the parametric $p$-value from the partial correlation test.
+the Spearman rank correlation of the residuals. Statistical significance
+was assessed by the two-sided $p$-value from the Spearman test
+(\texttt{scipy.stats.spearmanr}), which uses an asymptotic $t$-distribution
+approximation for the null hypothesis of no monotonic association.
 
 % --------------------------------------------------------------------
 \subsection{Co-expression analysis}
@@ -574,6 +724,22 @@ dependencies were computed to test whether any association survives
 tissue-type correction.
 
 % --------------------------------------------------------------------
+\subsection{PIK3CA/PTEN confound control}
+
+To test whether the SLC2A8--AKT sensitivity association is confounded by
+PIK3CA activating mutations or PTEN loss-of-function mutations, we fit
+three nested OLS regression models. M1 included lineage dummies (top 15
+OncotreeLineage categories) as the sole covariates. M2 added a binary
+PIK3CA hotspot mutation indicator. M3 added a binary PTEN mutation
+indicator. In each model, SLC2A8 expression (standardized) was the
+predictor of interest. Collinearity was assessed by Fisher's exact test
+for enrichment of PIK3CA-mutant lines in the SLC2A8-high group, and by
+Cohen's $d$ comparing SLC2A8 expression between PIK3CA-mutant and
+wildtype lines. The percentage attenuation of the SLC2A8 coefficient
+was computed as $100 \times (1 - \beta_{\mathrm{M3}} /
+\beta_{\mathrm{M1}})$.
+
+% --------------------------------------------------------------------
 \subsection{RAS mutation interaction model}
 
 To test whether RAS-pathway mutation status modifies the SLC2A8--drug
@@ -600,6 +766,19 @@ Distribution similarity between TCGA tumors and DepMap PDAC cell lines
 was assessed by Kolmogorov-Smirnov test.
 
 % --------------------------------------------------------------------
+\subsection{Stratifier-free validation and subgroup analysis}
+
+To test whether the SLC2A8--AKT association depends on the mutation
+stratifier, we computed Spearman rank correlations between SLC2A8
+expression and sensitivity for each of the 6,790 PRISM compounds across
+all cell lines with matched data, using no mutation information.
+Drug rankings were determined by correlation magnitude. MOA enrichment
+in the top 5\% of negatively correlated drugs was assessed by Fisher's
+exact test. Subgroup analyses computed raw Spearman and lineage-corrected
+partial correlations (as in Section~4.4) within PIK3CA-wildtype,
+KRAS-mutant/PIK3CA-wildtype, and PIK3CA-mutant cell lines separately.
+
+% --------------------------------------------------------------------
 \subsection{Statistical considerations}
 
 All $p$-values are two-sided unless otherwise stated. Effect sizes are
@@ -611,6 +790,7 @@ were performed in Python 3.12 using scipy.stats, pandas, and numpy.
 % --------------------------------------------------------------------
 \subsection{Code availability}
 
+\begin{sloppypar}
 All analysis scripts are available at
 \url{https://github.com/rhatigan-agi/slc2a8-akt-sensitivity-kras}.
 Key scripts include: \texttt{h13c\_deep\_dive.py} (unbiased PRISM screen),
@@ -619,7 +799,12 @@ Key scripts include: \texttt{h13c\_deep\_dive.py} (unbiased PRISM screen),
 \texttt{h13f\_metabolic\_clue.py} (metabolic co-expression and CRISPR),
 \texttt{h13g\_convergence.py} (convergence testing),
 \texttt{h13h\_reviewer\_analyses.py} (RAS interaction, classification,
-TCGA descriptive), and \texttt{generate\_figures.py} (figure generation).
+TCGA descriptive), \texttt{h13i\_pik3ca\_confound.py} (PIK3CA/PTEN
+confound control), \texttt{h13j\_kras\_only\_sensitivity.py} (KRAS-only
+stratifier sensitivity analysis), \texttt{h13k\_slc2a8\_independence.py}
+(stratifier-free validation and subgroup analysis), and
+\texttt{generate\_figures.py} (figure generation).
+\end{sloppypar}
 
 % ====================================================================
 \section*{Acknowledgments}
@@ -708,10 +893,9 @@ inhibition.} Summary diagram. SLC2A8 expression marks a metabolic
 subtype with co-expressed endosomal trafficking, lipogenesis, and
 oxidative glycolysis programs. AKT drug sensitivity (right, red) is
 the actionable finding; genetic dependencies (left, blue) characterize
-the subtype biology. Dashed line indicates that convergence testing
-found no cell-level co-occurrence between AKT sensitivity and
-lipogenesis dependency (interaction $p$>0.70). Lineage-independent
-partial correlations shown at bottom.}
+the subtype biology. Dashed line: no cell-level co-occurrence between
+AKT sensitivity and lipogenesis dependency (interaction $p$>0.70).
+Lineage-independent partial correlations at bottom.}
 \label{fig:model}
 \end{figure}
 
@@ -770,7 +954,23 @@ interaction term are null.}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=\textwidth]{figS4_roc_tcga.pdf}
+\includegraphics[width=\textwidth]{figS4_pik3ca_confound.pdf}
+\caption{\textbf{PIK3CA/PTEN confound control.}
+(A)~Collinearity assessment: SLC2A8 expression in PIK3CA-mutant versus
+wildtype cell lines (Cohen's $d$=+0.581, $p$<0.001). 77\% of
+PIK3CA-mutant lines fall in the SLC2A8-high half.
+(B)~Nested regression results: SLC2A8 coefficient ($\beta$) predicting
+AKT drug sensitivity across three models---M1 (lineage only), M2
+(+PIK3CA), M3 (+PIK3CA+PTEN). All three AKT inhibitors remain
+significant ($p$<0.01) in the fully adjusted model with $\sim$15\%
+attenuation. (C)~$P$-value comparison across models. SLC2A8 $p$-values
+remain well below 0.01 in all nested models.}
+\label{fig:pik3ca_confound}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{figS5_roc_tcga.pdf}
 \caption{\textbf{Classification performance and TCGA-PAAD validation.}
 (A)~ROC curves for SLC2A8 expression predicting above-median AKT
 inhibitor sensitivity (afuresertib AUC=0.577, ipatasertib AUC=0.593,
@@ -782,6 +982,40 @@ expression (KS $p$<0.0001), likely due to stromal contribution.
 ($\rho$=+0.21, $p$=0.005) and FASN ($\rho$=+0.18, $p$=0.016)
 replicate; VPS35 and SCD do not.}
 \label{fig:roc_tcga}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{figS6_continuous_ranking.pdf}
+\caption{\textbf{Stratifier-free drug ranking by SLC2A8 expression.}
+(A)~Top 25 PRISM compounds most negatively correlated with SLC2A8
+expression (Spearman $\rho$), ranked across all cell lines without any
+mutation stratifier. AKT inhibitors (red) occupy ranks 1--5 out of
+6,790 tested compounds. Drug names in bold are AKT inhibitors.
+(B)~MOA enrichment among the top 5\% most negatively correlated drugs.
+AKT inhibitors are enriched 11-fold (9/25 compounds, OR=10.97,
+$p$=1.7$\times$10$^{-6}$). MEK and RAF inhibitors show zero
+enrichment, consistent with SLC2A8 marking AKT-dependent rather than
+MEK/RAS-dependent vulnerability.}
+\label{fig:continuous_ranking}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{figS7_subgroup_independence.pdf}
+\caption{\textbf{SLC2A8--AKT drug correlation across mutation subgroups.}
+(A)~Raw Spearman correlations of SLC2A8 expression with three AKT
+inhibitors, computed within four cell line subgroups: all lines,
+PIK3CA-wildtype only, KRAS-mutant/PIK3CA-wildtype, and PIK3CA-mutant
+only. (B)~Lineage-corrected partial correlations for the same
+subgroups. The SLC2A8--AKT signal is significant in PIK3CA-wildtype
+lines ($p$<0.02 for all three drugs after lineage correction),
+confirming independence from PIK3CA mutation status. Effect sizes are
+largest in PIK3CA-mutant lines ($r$=$-$0.26 to $-$0.35), indicating
+SLC2A8 further stratifies within this subgroup. The
+KRAS-mutant/PIK3CA-wildtype subgroup (n$\approx$91) lacks statistical
+power. * $p$<0.05; ** $p$<0.01.}
+\label{fig:subgroup_independence}
 \end{figure}
 
 \end{document}

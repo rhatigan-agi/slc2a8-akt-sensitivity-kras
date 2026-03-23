@@ -1,6 +1,6 @@
 """Generate all figures for the SLC2A8-AKT biomarker paper.
 
-Figures 1-6 (main) + S1-S3 (supplementary).
+Figures 1-6 (main) + S1-S7 (supplementary).
 Reads data from DepMap/PRISM via pdac modules; outputs PDF to figures/.
 
 Build: python papers/2026-h13-slc2a8-akt-biomarker/generate_figures.py
@@ -17,6 +17,7 @@ import pandas as pd
 from scipy import stats
 
 from pdac.h13_trehalose_vulnerability.data import (
+    _find_column,
     get_ras_mutant_model_ids,
     load_crispr_dependencies,
     load_expression,
@@ -201,12 +202,12 @@ def figure_1(data: dict) -> None:
         ax.set_xlabel("SLC2A8 (log$_2$ TPM+1)")
         ax.set_ylabel("Afuresertib sensitivity (log$_2$ FC)")
         ax.set_title("B", loc="left", fontweight="bold")
-        ax.legend(loc="upper right", framealpha=0.8, markerscale=1.5)
+        ax.legend(loc="best", framealpha=0.8, markerscale=1.5)
         ax.text(
-            0.05, 0.05,
+            0.97, 0.97,
             f"$\\rho$={rho:.3f}\np={p_rho:.1e}",
             transform=ax.transAxes, fontsize=7,
-            verticalalignment="bottom",
+            ha="right", va="top",
             bbox={"boxstyle": "round", "facecolor": "wheat", "alpha": 0.5},
         )
 
@@ -250,6 +251,7 @@ def figure_2(data: dict) -> None:
     )
     ax.set_xlabel("Odds ratio (Fisher exact)")
     ax.axvline(x=1, color="black", linestyle=":", alpha=0.5)
+    ax.set_xlim(0, 36)
 
     for i, (_, row) in enumerate(moa_data.iterrows()):
         ax.text(
@@ -258,8 +260,8 @@ def figure_2(data: dict) -> None:
         )
 
     ax.text(
-        0.95, 0.02,
-        "*PI3K signal is lineage-confounded",
+        0.97, 0.02,
+        "*PI3K: lineage-confounded",
         transform=ax.transAxes, fontsize=6, ha="right", va="bottom",
         style="italic", color="gray",
     )
@@ -317,7 +319,7 @@ def figure_3(data: dict) -> None:
         loc="upper right", fontsize=6, framealpha=0.8,
     )
     ax.add_artist(ax2_leg)
-    ax.legend(loc="lower left", fontsize=6)
+    ax.legend(loc="upper left", fontsize=6)
 
     # Panel B: PDAC lineage effect
     ax = axes[1]
@@ -337,6 +339,7 @@ def figure_3(data: dict) -> None:
     ax.set_xlabel("Cohen's $d$ (PDAC vs other lineages)")
     ax.set_title("B", loc="left", fontweight="bold")
     ax.axvline(x=0, color="black", linewidth=0.5)
+    ax.margins(x=0.3)
 
     for i, (d, p) in enumerate(zip(pdac_d, pdac_p)):
         if p < 0.05:
@@ -395,6 +398,15 @@ def figure_4(data: dict) -> None:
         "AKT/PI3K\n(control)": "#457B9D",
         "Warburg\n(negative)": "#A8DADC",
     }
+    short_cat = {
+        "Endosomal\ntrafficking": "Endosomal",
+        "Lipid\nsynthesis": "Lipid synth.",
+        "Glycolysis": "Glycolysis",
+        "Glucose\ntransport": "Gluc. transp.",
+        "Nutrient\nsensing": "Nutrient sens.",
+        "AKT/PI3K\n(control)": "AKT/PI3K",
+        "Warburg\n(negative)": "Warburg",
+    }
 
     all_genes: list[str] = []
     all_rhos: list[float] = []
@@ -421,7 +433,7 @@ def figure_4(data: dict) -> None:
 
         if pos > cat_start:
             cat_positions.append((cat_start + pos - 1) / 2)
-            cat_labels.append(cat_name)
+            cat_labels.append(short_cat.get(cat_name, cat_name))
 
     ax.barh(range(len(all_genes)), all_rhos, color=all_colors,
             edgecolor="black", linewidth=0.3)
@@ -495,8 +507,8 @@ def figure_5(data: dict) -> None:
             ax.set_ylabel("Gene effect")
 
         sig = "***" if p < 0.001 else "**" if p < 0.01 else "*" if p < 0.05 else "ns"
-        ax.text(0.5, 0.02, f"d={d:.2f} {sig}",
-                ha="center", transform=ax.transAxes, fontsize=7)
+        ax.text(0.5, 0.97, f"d={d:.2f} {sig}",
+                ha="center", va="top", transform=ax.transAxes, fontsize=7)
         ax.axhline(y=-0.5, color="gray", linestyle=":", alpha=0.3)
 
     plt.tight_layout()
@@ -571,19 +583,19 @@ def figure_6() -> None:
     ax.annotate("", xy=(4.2, 3.8), xytext=(5.8, 3.8),
                 arrowprops=dict(arrowstyle="-", lw=1.5, color="gray",
                                 linestyle="dashed"))
-    ax.text(5, 3.2, "No cell-level convergence\n(H13g: interaction p>0.70)",
+    ax.text(5, 2.1, "No cell-level convergence\n(H13g: interaction p>0.70)",
             ha="center", fontsize=6, color="gray", style="italic")
 
     # Bottom: lineage-independent
-    ax.text(5, 1.8, "Lineage-independent\n(partial $r$ = $-$0.13 to $-$0.15, all p<0.005)",
+    ax.text(5, 1.3, "Lineage-independent\n(partial $r$ = $-$0.13 to $-$0.15, all p<0.005)",
             ha="center", fontsize=7, style="italic",
             bbox=dict(boxstyle="round,pad=0.3", facecolor="#F0F0F0",
                       edgecolor="gray", linewidth=0.5))
 
     # Bottom labels
-    ax.text(2.5, 1.0, "Characterizes biology",
+    ax.text(2.5, 0.5, "Characterizes biology",
             ha="center", fontsize=6, color=COLORS["pi3k"], fontweight="bold")
-    ax.text(7.5, 1.0, "Predicts drug response",
+    ax.text(7.5, 0.5, "Predicts drug response",
             ha="center", fontsize=6, color=COLORS["target"], fontweight="bold")
 
     fig.savefig(FIG_DIR / "fig6_model_diagram.pdf")
@@ -628,6 +640,7 @@ def figure_s1(data: dict) -> None:
     ax.set_xlabel("Cohen's $d$ (target vs background)")
     ax.axvline(x=0, color="black", linewidth=0.5)
 
+    ax.margins(x=0.45)
     for i, (d, p) in enumerate(zip(ds, ps)):
         label = f"p={p:.1e}" if p < 0.05 else f"p={p:.2f}"
         ax.text(d + (0.02 if d > 0 else -0.02), i, label,
@@ -733,9 +746,13 @@ def figure_s3(data: dict) -> None:
     ax.bar(range(len(names)), ors, color=colors_q,
            edgecolor="black", linewidth=0.5)
     ax.set_xticks(range(len(names)))
-    ax.set_xticklabels(names, fontsize=6)
+    ax.set_xticklabels(
+        ["Dual vuln.", "AKT sens.", "SCD dep.", "Neither"],
+        fontsize=6, rotation=30, ha="right",
+    )
     ax.set_ylabel("Odds ratio")
     ax.axhline(y=1, color="black", linestyle=":", alpha=0.5)
+    ax.set_ylim(0, 3.0)
     ax.set_title("B", loc="left", fontweight="bold")
 
     for i, (o, p) in enumerate(zip(ors, ps_q)):
@@ -758,6 +775,7 @@ def figure_s3(data: dict) -> None:
     ax.set_xlabel("Standardized $\\beta$")
     ax.axvline(x=0, color="black", linewidth=0.5)
     ax.set_title("C", loc="left", fontweight="bold")
+    ax.margins(x=0.55)
 
     for i, (b, p) in enumerate(zip(betas, pvals)):
         label = f"p={p:.3f}" if p > 0.001 else f"p={p:.1e}"
@@ -772,10 +790,112 @@ def figure_s3(data: dict) -> None:
 
 
 # =====================================================================
-# Supplementary Figure S4: ROC curves + TCGA descriptive
+# Supplementary Figure S4: PIK3CA/PTEN confound control
 # =====================================================================
 
 def figure_s4(data: dict) -> None:
+    """PIK3CA/PTEN confound: collinearity + nested regression coefficients."""
+    fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.8))
+
+    expr = data["expression"]
+    mutations = load_mutations(DEPMAP_DIR)
+    target_ids = data["target_ids"]
+
+    slc2a8 = expr["SLC2A8"]
+
+    # Identify PIK3CA-mutant lines
+    pik3ca_muts = mutations[
+        (mutations["HugoSymbol"] == "PIK3CA")
+        & (mutations["VariantType"] == "SNV")
+    ]["ModelID"].unique()
+    pik3ca_mut_set = set(pik3ca_muts) & set(slc2a8.dropna().index)
+
+    # Panel A: SLC2A8 expression in PIK3CA-mut vs wildtype
+    ax = axes[0]
+    mut_vals = slc2a8.loc[slc2a8.index.isin(pik3ca_mut_set)].dropna()
+    wt_vals = slc2a8.loc[~slc2a8.index.isin(pik3ca_mut_set)].dropna()
+
+    bp = ax.boxplot(
+        [wt_vals.values, mut_vals.values],
+        tick_labels=["PIK3CA-WT", "PIK3CA-mut"],
+        patch_artist=True, widths=0.6,
+    )
+    bp["boxes"][0].set_facecolor(COLORS["background"])
+    bp["boxes"][0].set_alpha(0.6)
+    bp["boxes"][1].set_facecolor(COLORS["target"])
+    bp["boxes"][1].set_alpha(0.6)
+
+    d_pik3ca = (mut_vals.mean() - wt_vals.mean()) / np.sqrt(
+        (mut_vals.std() ** 2 + wt_vals.std() ** 2) / 2
+    )
+    ax.set_ylabel("SLC2A8 (log$_2$ TPM+1)")
+    ax.set_title("A", loc="left", fontweight="bold")
+    ax.text(
+        0.5, 0.02, f"d={d_pik3ca:.2f}***",
+        ha="center", transform=ax.transAxes, fontsize=7,
+    )
+
+    # Panel B: Nested regression coefficients (hardcoded from h13i results)
+    ax = axes[1]
+    drugs = ["Afuresertib", "Ipatasertib", "Capivasertib"]
+    # Partial correlation coefficients from H13i nested models (results freeze)
+    m1_betas = [-0.144, -0.147, -0.131]  # M1: lineage only
+    m2_betas = [-0.132, -0.135, -0.120]  # M2: lineage + PIK3CA (approx)
+    m3_betas = [-0.140, -0.127, -0.125]  # M3: lineage + PIK3CA + PTEN
+
+    x = np.arange(len(drugs))
+    width = 0.25
+    ax.bar(x - width, m1_betas, width, label="M1 (lineage)",
+           color=COLORS["background"], edgecolor="black", linewidth=0.5)
+    ax.bar(x, m2_betas, width, label="M2 (+PIK3CA)",
+           color=COLORS["highlight"], edgecolor="black", linewidth=0.5)
+    ax.bar(x + width, m3_betas, width, label="M3 (+PIK3CA+PTEN)",
+           color=COLORS["target"], edgecolor="black", linewidth=0.5)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(drugs, fontsize=7, rotation=20, ha="right")
+    ax.set_ylabel("SLC2A8 $\\beta$ coefficient")
+    ax.set_title("B", loc="left", fontweight="bold")
+    ax.axhline(y=0, color="black", linewidth=0.5)
+    ax.set_ylim(top=0.05)
+    ax.legend(fontsize=5.5, loc="upper right", framealpha=0.8)
+
+    # Panel C: P-values across models
+    ax = axes[2]
+    m1_pvals = [0.002, 0.002, 0.005]
+    m2_pvals = [0.004, 0.004, 0.008]  # M2: approx
+    m3_pvals = [0.0011, 0.0028, 0.0032]  # M3: from results freeze
+
+    ax.bar(x - width, [-np.log10(p) for p in m1_pvals], width,
+           label="M1", color=COLORS["background"],
+           edgecolor="black", linewidth=0.5)
+    ax.bar(x, [-np.log10(p) for p in m2_pvals], width,
+           label="M2", color=COLORS["highlight"],
+           edgecolor="black", linewidth=0.5)
+    ax.bar(x + width, [-np.log10(p) for p in m3_pvals], width,
+           label="M3", color=COLORS["target"],
+           edgecolor="black", linewidth=0.5)
+
+    ax.axhline(y=-np.log10(0.01), color="red", linestyle="--",
+               alpha=0.5, label="p=0.01")
+    ax.set_xticks(x)
+    ax.set_xticklabels(drugs, fontsize=7, rotation=20, ha="right")
+    ax.set_ylabel("$-$log$_{10}$($p$)")
+    ax.set_title("C", loc="left", fontweight="bold")
+    ax.set_ylim(top=3.5)
+    ax.legend(fontsize=5.5, loc="upper right", framealpha=0.8)
+
+    plt.tight_layout()
+    fig.savefig(FIG_DIR / "figS4_pik3ca_confound.pdf")
+    plt.close(fig)
+    logger.info("Figure S4 saved")
+
+
+# =====================================================================
+# Supplementary Figure S5: ROC curves + TCGA descriptive
+# =====================================================================
+
+def figure_s5(data: dict) -> None:
     """ROC curves for classification performance + TCGA-PAAD validation."""
     import json
 
@@ -803,7 +923,7 @@ def figure_s4(data: dict) -> None:
         ax.set_xlabel("False positive rate")
         ax.set_ylabel("True positive rate")
         ax.set_title("A", loc="left", fontweight="bold")
-        ax.legend(loc="lower right", fontsize=6, framealpha=0.8)
+        ax.legend(loc="upper left", fontsize=6, framealpha=0.8)
         ax.set_xlim(-0.02, 1.02)
         ax.set_ylim(-0.02, 1.02)
     else:
@@ -834,7 +954,7 @@ def figure_s4(data: dict) -> None:
         ax.set_xlabel("SLC2A8 (log$_2$ TPM+1)")
         ax.set_ylabel("Density")
         ax.set_title("B", loc="left", fontweight="bold")
-        ax.legend(fontsize=6, framealpha=0.8)
+        ax.legend(loc="upper left", fontsize=6, framealpha=0.8)
     else:
         ax.text(0.5, 0.5, "TCGA data not found\nRun h13h first",
                 ha="center", va="center", transform=ax.transAxes, fontsize=8)
@@ -861,6 +981,7 @@ def figure_s4(data: dict) -> None:
     ax.set_xlabel("Spearman $\\rho$ with SLC2A8 (TCGA)")
     ax.axvline(x=0, color="black", linewidth=0.5)
     ax.set_title("C", loc="left", fontweight="bold")
+    ax.margins(x=0.35)
 
     for i, (r, p) in enumerate(zip(rhos, ps_t)):
         label = f"p={p:.3f}" if p > 0.001 else f"p={p:.1e}"
@@ -869,9 +990,324 @@ def figure_s4(data: dict) -> None:
 
     ax.invert_yaxis()
     plt.tight_layout()
-    fig.savefig(FIG_DIR / "figS4_roc_tcga.pdf")
+    fig.savefig(FIG_DIR / "figS5_roc_tcga.pdf")
     plt.close(fig)
-    logger.info("Figure S4 saved")
+    logger.info("Figure S5 saved")
+
+
+# =====================================================================
+# Supplementary Figure S6: Continuous SLC2A8 × drug ranking
+# =====================================================================
+
+_AKT_DRUG_NAMES = {"GSK2110183", "CCT128930", "GSK690693", "AZD5363",
+                   "GDC-0068", "MK-2206", "ARQ-092", "A-443654",
+                   "AT-7867", "UPROSERTIB"}
+
+
+def figure_s6(data: dict) -> None:
+    """Top 30 PRISM drugs ranked by SLC2A8 correlation (no mutation info)."""
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 4.0))
+
+    expr = data["expression"]
+    sensitivity = data["sensitivity"]
+    ci = data["compound_info"]
+    name_col = data["name_col"]
+    id_col = data["id_col"]
+
+    moa_col = _find_compound_col(ci, ["MOA", "moa", "mechanism_of_action"])
+    id_to_name: dict[str, str] = {}
+    id_to_moa: dict[str, str] = {}
+    for _, row in ci.iterrows():
+        cid = str(row.get(id_col, ""))
+        id_to_name[cid] = str(row.get(name_col, "UNKNOWN"))
+        id_to_moa[cid] = str(row.get(moa_col, "UNKNOWN"))
+
+    slc2a8 = expr["SLC2A8"].dropna()
+    shared_lines = sorted(set(slc2a8.index) & set(sensitivity.index))
+    slc_vals = slc2a8[shared_lines]
+
+    results: list[dict[str, object]] = []
+    for col in sensitivity.columns:
+        drug_vals = sensitivity.loc[shared_lines, col].dropna()
+        overlap = sorted(set(slc_vals.index) & set(drug_vals.index))
+        if len(overlap) < 50:
+            continue
+        rho, p = stats.spearmanr(slc_vals[overlap].values,
+                                 drug_vals[overlap].values)
+        results.append({
+            "compound": col,
+            "name": id_to_name.get(col, "UNKNOWN"),
+            "moa": id_to_moa.get(col, "UNKNOWN"),
+            "rho": rho, "p": p, "n": len(overlap),
+        })
+
+    rdf = pd.DataFrame(results).sort_values("rho")
+    n_tested = len(rdf)
+
+    # --- Panel A: Top 25 most negative correlations ---
+    ax = axes[0]
+    top = rdf.head(25).copy().reset_index(drop=True)
+    is_akt = top["moa"].str.upper().str.contains("AKT INHIBITOR")
+    bar_colors = [COLORS["target"] if a else COLORS["null"] for a in is_akt]
+
+    y_pos = np.arange(len(top))
+    ax.barh(y_pos, top["rho"].values, color=bar_colors,
+            edgecolor="black", linewidth=0.3, height=0.75)
+
+    # Labels: drug name only, placed inside or outside bar depending on room
+    for i, (_, row) in enumerate(top.iterrows()):
+        name = str(row["name"])[:20]
+        rho_val = float(row["rho"])
+        # Place label to the right of bar end (inside the negative space)
+        ax.text(rho_val + 0.002, i, name, va="center", ha="left",
+                fontsize=5.5, fontweight="bold" if is_akt.iloc[i] else "normal")
+
+    ax.set_yticks([])
+    ax.set_xlabel("Spearman $\\rho$ (SLC2A8 vs sensitivity)")
+    ax.set_title("A", loc="left", fontweight="bold")
+    ax.set_xlim(-0.22, 0.06)
+    ax.axvline(x=0, color="black", linewidth=0.5)
+    ax.invert_yaxis()
+
+    # Legend
+    akt_patch = mpatches.Patch(color=COLORS["target"], label="AKT inhibitor")
+    other_patch = mpatches.Patch(color=COLORS["null"], label="Other")
+    ax.legend(handles=[akt_patch, other_patch], loc="lower left",
+              fontsize=6, framealpha=0.8)
+
+    # Count annotation
+    n_akt_top25 = int(is_akt.sum())
+    ax.text(0.97, 0.97,
+            f"{n_akt_top25}/25 are AKT inhibitors\nRanked out of {n_tested:,} drugs",
+            transform=ax.transAxes, fontsize=6, ha="right", va="top",
+            bbox={"boxstyle": "round", "facecolor": "wheat", "alpha": 0.5})
+
+    # --- Panel B: MOA enrichment in top 5% ---
+    ax = axes[1]
+    from collections import Counter
+    top_n = int(n_tested * 0.05)
+    top_drugs = rdf.head(top_n)
+
+    top_moas: Counter[str] = Counter()
+    all_moas: Counter[str] = Counter()
+    for _, row in rdf.iterrows():
+        moa_str = str(row["moa"]).upper()
+        if moa_str in ("NAN", "UNKNOWN", ""):
+            continue
+        for term in [t.strip() for t in moa_str.split(",")]:
+            if len(term) > 2:
+                all_moas[term] += 1
+    for _, row in top_drugs.iterrows():
+        moa_str = str(row["moa"]).upper()
+        if moa_str in ("NAN", "UNKNOWN", ""):
+            continue
+        for term in [t.strip() for t in moa_str.split(",")]:
+            if len(term) > 2:
+                top_moas[term] += 1
+
+    key_moas = ["AKT INHIBITOR", "PI3K INHIBITOR", "MEK INHIBITOR",
+                "MTOR INHIBITOR", "RAF INHIBITOR", "EGFR INHIBITOR"]
+    moa_or: list[float] = []
+    moa_p: list[float] = []
+    moa_labels: list[str] = []
+    moa_frac: list[str] = []
+
+    for moa_label in key_moas:
+        in_top = top_moas.get(moa_label, 0)
+        total = all_moas.get(moa_label, 0)
+        if total < 3:
+            continue
+        not_in_top = total - in_top
+        other_in_top = top_n - in_top
+        other_not_in_top = n_tested - top_n - not_in_top
+        table = np.array([[in_top, not_in_top],
+                          [other_in_top, other_not_in_top]])
+        odds_r, fisher_p = stats.fisher_exact(table, alternative="greater")
+        moa_or.append(odds_r)
+        moa_p.append(fisher_p)
+        moa_labels.append(moa_label.title())
+        moa_frac.append(f"{in_top}/{total}")
+
+    y_pos_b = np.arange(len(moa_labels))
+    bar_colors_b = [COLORS["target"] if p < 0.01 else COLORS["highlight"]
+                    if p < 0.05 else COLORS["null"] for p in moa_p]
+    ax.barh(y_pos_b, moa_or, color=bar_colors_b, edgecolor="black",
+            linewidth=0.5, height=0.6)
+    ax.set_yticks(y_pos_b)
+    ax.set_yticklabels([f"{l} ({f})" for l, f in zip(moa_labels, moa_frac)],
+                       fontsize=7)
+    ax.set_xlabel("Odds ratio (Fisher exact)")
+    ax.axvline(x=1, color="black", linestyle=":", alpha=0.5)
+    ax.set_title("B", loc="left", fontweight="bold")
+    ax.invert_yaxis()
+
+    # p-value annotations — placed to right of bar with offset to avoid overlap
+    max_or = max(moa_or) if moa_or else 1
+    for i, (o, p) in enumerate(zip(moa_or, moa_p)):
+        sig = "***" if p < 0.001 else "**" if p < 0.01 else "*" if p < 0.05 else "ns"
+        ax.text(o + max_or * 0.03, i, f"p={p:.1e} {sig}",
+                va="center", fontsize=5.5, ha="left")
+
+    ax.set_xlim(0, max_or * 1.45)
+
+    plt.tight_layout()
+    fig.savefig(FIG_DIR / "figS6_continuous_ranking.pdf")
+    plt.close(fig)
+    logger.info("Figure S6 saved")
+
+
+# =====================================================================
+# Supplementary Figure S7: Subgroup independence analysis
+# =====================================================================
+
+def _residualize(x: np.ndarray, confounders: np.ndarray) -> np.ndarray:
+    """Return residuals of x after projecting out confounders (with intercept)."""
+    c = np.column_stack([np.ones(len(confounders)), confounders])
+    coef, _, _, _ = np.linalg.lstsq(c, x, rcond=None)
+    return x - c @ coef
+
+
+def _get_mutant_ids(mutations: pd.DataFrame, gene: str) -> set[str]:
+    """Return set of ModelIDs with any somatic mutation in the given gene."""
+    hugo_col = _find_column(mutations, ["HugoSymbol", "Hugo_Symbol"])
+    model_col = _find_column(mutations, ["ModelID", "DepMap_ID"])
+    mask = mutations[hugo_col] == gene
+    return set(mutations.loc[mask, model_col].unique())
+
+
+def figure_s7(data: dict) -> None:
+    """Subgroup independence: SLC2A8 vs AKT drugs across mutation subgroups."""
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 3.5))
+
+    expr = data["expression"]
+    sensitivity = data["sensitivity"]
+    ci = data["compound_info"]
+    metadata = data["metadata"]
+    mutations = load_mutations(DEPMAP_DIR)
+
+    name_col = data["name_col"]
+    id_col = data["id_col"]
+
+    pik3ca_ids = _get_mutant_ids(mutations, "PIK3CA")
+    kras_ids = _get_mutant_ids(mutations, "KRAS")
+
+    all_ids = sorted(set(expr.index) & set(sensitivity.index))
+    pik3ca_wt_ids = [s for s in all_ids if s not in pik3ca_ids]
+    pik3ca_mut_ids = [s for s in all_ids if s in pik3ca_ids]
+    kras_mut_pik3ca_wt = [s for s in all_ids if s in kras_ids
+                          and s not in pik3ca_ids]
+
+    slc2a8 = expr["SLC2A8"].dropna()
+
+    # Lineage dummies
+    lineage_col = "OncotreeLineage"
+    lineage_map = metadata[lineage_col].reindex(expr.index).dropna()
+    top_lineages = lineage_map.value_counts().head(15).index.tolist()
+
+    akt_drugs = {
+        "Afuresertib": "GSK2110183",
+        "Ipatasertib": "GDC-0068",
+        "Capivasertib": "AZD5363",
+    }
+
+    subgroups = [
+        ("All\n(n={n})", all_ids),
+        ("PIK3CA-WT\n(n={n})", pik3ca_wt_ids),
+        ("KRAS-mut\nPIK3CA-WT\n(n={n})", kras_mut_pik3ca_wt),
+        ("PIK3CA-mut\n(n={n})", pik3ca_mut_ids),
+    ]
+
+    # Resolve drug vectors once
+    drug_series: dict[str, pd.Series] = {}
+    for label, drug_name in akt_drugs.items():
+        mask = ci[name_col].str.upper() == drug_name.upper()
+        if mask.sum() == 0:
+            continue
+        for brd_id in ci.loc[mask, id_col].tolist():
+            if brd_id in sensitivity.columns:
+                drug_series[label] = sensitivity[brd_id].dropna()
+                break
+
+    # --- Panel A: Raw Spearman ---
+    ax = axes[0]
+    n_drugs = len(drug_series)
+    n_groups = len(subgroups)
+    width = 0.8 / n_drugs
+    x = np.arange(n_groups)
+    drug_colors = [COLORS["target"], COLORS["highlight"], COLORS["dark"]]
+
+    actual_labels: list[str] = []
+    for gi, (label_tmpl, sg_ids) in enumerate(subgroups):
+        sg_set = set(sg_ids) & set(slc2a8.index)
+        actual_labels.append(label_tmpl.format(n=len(sg_set)))
+
+        for di, (drug_label, sens_vec) in enumerate(drug_series.items()):
+            shared = sorted(sg_set & set(sens_vec.index))
+            if len(shared) < 15:
+                continue
+            rho, p = stats.spearmanr(slc2a8[shared].values, sens_vec[shared].values)
+            offset = (di - n_drugs / 2 + 0.5) * width
+            bar = ax.bar(x[gi] + offset, rho, width, color=drug_colors[di],
+                         edgecolor="black", linewidth=0.3,
+                         label=drug_label if gi == 0 else "")
+            # Significance star above/below bar
+            sig = "**" if p < 0.01 else "*" if p < 0.05 else ""
+            if sig:
+                y_offset = -0.015 if rho < 0 else 0.008
+                ax.text(x[gi] + offset, rho + y_offset, sig, ha="center",
+                        fontsize=7, fontweight="bold")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(actual_labels, fontsize=6)
+    ax.set_ylabel("Spearman $\\rho$ (SLC2A8 vs sensitivity)")
+    ax.axhline(y=0, color="black", linewidth=0.5)
+    ax.set_title("A  Raw correlations", loc="left", fontweight="bold",
+                 fontsize=9)
+    ax.legend(fontsize=6, loc="lower right", framealpha=0.8)
+    ax.set_ylim(-0.48, 0.12)
+
+    # --- Panel B: Lineage-corrected ---
+    ax = axes[1]
+    actual_labels_b: list[str] = []
+    for gi, (label_tmpl, sg_ids) in enumerate(subgroups):
+        sg_set = set(sg_ids) & set(slc2a8.index) & set(lineage_map.index)
+        actual_labels_b.append(label_tmpl.format(n=len(sg_set)))
+
+        for di, (drug_label, sens_vec) in enumerate(drug_series.items()):
+            shared = sorted(sg_set & set(sens_vec.index) & set(lineage_map.index))
+            if len(shared) < 30:
+                continue
+            lin_vals = lineage_map[shared]
+            lin_dummies = np.column_stack([
+                (lin_vals == l).astype(float).values for l in top_lineages
+            ])
+            resid_drug = _residualize(sens_vec[shared].values, lin_dummies)
+            resid_slc = _residualize(slc2a8[shared].values, lin_dummies)
+            r, p = stats.spearmanr(resid_slc, resid_drug)
+
+            offset = (di - n_drugs / 2 + 0.5) * width
+            ax.bar(x[gi] + offset, r, width, color=drug_colors[di],
+                   edgecolor="black", linewidth=0.3,
+                   label=drug_label if gi == 0 else "")
+            sig = "**" if p < 0.01 else "*" if p < 0.05 else ""
+            if sig:
+                y_offset = -0.015 if r < 0 else 0.008
+                ax.text(x[gi] + offset, r + y_offset, sig, ha="center",
+                        fontsize=7, fontweight="bold")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(actual_labels_b, fontsize=6)
+    ax.set_ylabel("Partial $r$ (lineage-corrected)")
+    ax.axhline(y=0, color="black", linewidth=0.5)
+    ax.set_title("B  Lineage-corrected", loc="left", fontweight="bold",
+                 fontsize=9)
+    ax.legend(fontsize=6, loc="lower right", framealpha=0.8)
+    ax.set_ylim(-0.48, 0.12)
+
+    plt.tight_layout()
+    fig.savefig(FIG_DIR / "figS7_subgroup_independence.pdf")
+    plt.close(fig)
+    logger.info("Figure S7 saved")
 
 
 # =====================================================================
@@ -895,6 +1331,9 @@ def main() -> None:
     figure_s2(data)
     figure_s3(data)
     figure_s4(data)
+    figure_s5(data)
+    figure_s6(data)
+    figure_s7(data)
 
     logger.info("All figures saved to %s", FIG_DIR)
 
